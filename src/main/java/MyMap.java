@@ -1,23 +1,63 @@
 import java.util.*;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class MyMap {
 
     public static void main(String[] args) {
-        //sortedList().forEach(System.out::println);
-        //modifyString();
-        sortByVal();
-        //getRepeatChar();
+        String[] arr = {"z","a","b","e","c","d"};
+        Map<String, Integer> map = new HashMap<>();
+        map.put("z",2);
+        map.put("a",1);
+        map.put("b",3);
+
+        /*listTesting(arr);
+        setTesting(arr);
+        mapTesting(map);*/
+
+        /*strReplace();
+        mapSortByVal();
+        sortedSet();
+        countChar();*/
+        //countWords();
+        //countChar();
+        //countChar();
+
     }
 
 
-    static void modifyString(){
+
+    static void mapTesting(Map<String, Integer> args){
+        args.entrySet().stream().sorted(Map.Entry.comparingByValue()).forEach(System.out::println);
+        BiConsumer<String, Integer> biConsumer = (k,v)-> System.out.println(""+ k +" "+ v);
+        args.forEach(biConsumer);
+
+    }
+
+    static void listTesting(String[] args){
+        List<String> list = new ArrayList<>(Arrays.asList(args));
+        System.out.println("List");
+        list.forEach(System.out::print);
+    }
+
+    static void setTesting(String[] args){
+        Set<String> set = new HashSet<>();
+        set.addAll(Arrays.asList(args));
+        System.out.println("\nSet");
+        set.forEach(System.out::print);
+        System.out.println();
+    }
+
+
+    static void strReplace(){
         String str = "Huahuw|UEJad|LLJJGF|jwiiwu|GHJjs|jj|";
-        String s = str.replace("|","[HELLO]");
-        System.out.println(s);
+        System.out.println(str.replace("|","[HELLO]"));
     }
-    static List<String> sortedList(){
-        String[] strs = {
+    static void sortedSet(){
+        String[] arr = {
                 "BBBakjfiwijw",
                 "!ZZZZijfiwls",
                 "AAaajiijjjfj",
@@ -26,34 +66,51 @@ public class MyMap {
                 "cccjiwijirtl"
         };
 
-        List<String> sorted = new ArrayList<>(Arrays.stream(strs).collect(Collectors.toList()));
-        List<String> tmp = sorted.stream().sorted().collect(Collectors.toList());
-        return tmp;
+        Set<String> set = new TreeSet<>(Comparator.reverseOrder());
+        set.addAll(Arrays.asList(arr));
+        set.forEach(System.out::println);
     }
-    static int[] getRepeatChar(){
-        String str = "safioeksauieaaooaytarrabamaaxxxa";
-        Set<Character> charSet = str.chars().mapToObj(e->(char)e).collect(Collectors.toSet());
-        Map<Character, Integer> result = new TreeMap<>();
-        List<String> res = new ArrayList<>();
 
-        for(char c : charSet){
-            int x = 0;
-            int count = 0;
-            List<Integer> position = new ArrayList<>();
-            for(int y=0; y< str.length(); y++){
-                if(c == str.charAt(x)){
-                    count ++;
-                    result.put(c, count);
-                    position.add(x);
-                    //System.out.println(str.charAt(x) +" "+ x);
-                }
-                x ++;
-            }
-        }
-        //result.forEach((k,v)-> System.out.println(k +" "+ v));
-        return new int[]{0};
+    static void countWords(){
+        List<String> words = Arrays.asList("hello", "world", "hello", "java", "world", "hello");
+
+        Map<String, Long> wordCounts = words.stream()
+                .collect(Collectors.groupingBy(Function.identity(),
+                        Collectors.reducing(0L, e -> 1L, Long::sum)));
+
+
+        words.stream()
+                        .collect(Collectors.groupingBy(Function.identity(),Collectors.reducing(0L, e->1L, Long::sum))).forEach((k,v)-> System.out.println(k +" "+ v));
+
+        //System.out.println(wordCounts);
     }
-    static void sortByVal(){
+    static void countChar(){
+        String str = "safioeksauieaaooaytarrabamaaxxxayc";
+
+        Map<Character, List<Integer>> letterPositions = IntStream.range(0, str.length())
+                .mapToObj(i -> new AbstractMap.SimpleEntry<>(str.charAt(i), i))
+                .collect(Collectors.groupingBy(Map.Entry::getKey,
+                        Collectors.mapping(Map.Entry::getValue, Collectors.toList())));
+
+        Map<Character, Long> a = IntStream.range(0, str.length())
+                .mapToObj(i -> new AbstractMap.SimpleEntry<>(str.charAt(i), i))
+                .collect(Collectors.groupingBy(Map.Entry::getKey,
+                        Collectors.mapping(Map.Entry::getValue,
+                                Collectors.reducing(0L, e->1L, Long::sum)
+                        ))).entrySet()
+                .stream()
+                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (o,n)->o, LinkedHashMap::new));
+        System.out.println(a);
+        System.out.println(letterPositions);
+    }
+    static void countChar1(){
+        String[] strings = "safioeksauieaaooaytarrabamaaxxxayc".split("");
+        Map<String, Integer> gr=Arrays.stream(strings)
+                .collect(Collectors.groupingBy(Function.identity(), Collectors.reducing(0,e->1,Integer::sum)));
+        System.out.println(gr);
+    }
+    static void mapSortByVal(){
 
         Map<String, Integer> map = new TreeMap<>();
         map.put("DHUHUHUSS", 22);
@@ -65,8 +122,6 @@ public class MyMap {
         Map<String, Integer> sorted = map.entrySet().stream()
                 .sorted(Map.Entry.comparingByValue())
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (o, n)->o, LinkedHashMap::new));
-
-
         sorted.forEach((k,v)-> System.out.println(String.format("%s %s", k, v)));
     }
 }
